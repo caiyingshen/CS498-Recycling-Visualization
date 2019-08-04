@@ -1,120 +1,83 @@
 import React, { Component }from 'react';
-import logo from './logo.svg';
-import './App.css';
-import * as d3 from 'd3'; 
+import { Bars, Axis } from './components'
+import { Tooltip } from 'reactstrap';
 import { scaleBand, scaleLinear } from 'd3-scale'
+import { years, discardedData, incineratedData, recycledData } from './recyclingData'
 
-class RecyclingChart extends Component<Props, State> {
+class RecyclingChart extends Component {
   constructor(props) {
     super(props);
   }
 
+  
   state = {
-    incineratedData: [100.00,
-      98.30,
-      97.60,
-      96.90,
-      96.20,
-      95.50,
-      94.80,
-      94.10,
-      92.80,
-      91.40,
-      90.00,
-      88.60,
-      87.20,
-      85.80,
-      84.40,
-      83.00,
-      81.60,
-      80.20,
-      78.80,
-      77.40,
-      76.00,
-      74.60,
-      73.20,
-      71.80,
-      70.40,
-      69.00,
-      67.60,
-      66.20,
-      64.80,
-      63.40,
-      62.00,
-      60.60,
-      59.20,
-      57.80,
-      56.40,
-      55.00],
-    years: [1980,
-      1981,
-      1982,
-      1983,
-      1984,
-      1985,
-      1986,
-      1987,
-      1988,
-      1989,
-      1990,
-      1991,
-      1992,
-      1993,
-      1994,
-      1995,
-      1996,
-      1997,
-      1998,
-      1999,
-      2000,
-      2001,
-      2002,
-      2003,
-      2004,
-      2005,
-      2006,
-      2007,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015],
-    xScale: scaleBand(),
-    yScale: scaleLinear(),
-    colorScale: scaleLinear()
-      .domain([0, 100])
-      .range(['#c97f2a', '#613d14'])
+    mode: 1,    
+    xScale: scaleBand().domain(years).range([20, 500]),
+    yScale: scaleLinear().domain([0, 100]).range([0, 500]),
+    hoveredBar: null
+  }
+
+  getData = () => {
+    const { mode } = this.state
+    if (mode === 1) { return discardedData }
+    else if (mode === 2) { return incineratedData } 
+    else { return recycledData }
+  }
+
+  getColorRange = () => {
+    const { mode } = this.state
+    if (mode === 1) { 
+      return scaleLinear().domain([0, 100]).range(['#c97f2a', '#613d14'])
+    }
+    else if (mode === 2) { 
+      return scaleLinear().domain([0, 100]).range(['#a3ad5f', '#4d522a'])
+    } 
+    else { 
+      return scaleLinear().domain([0, 100]).range(['#3ccf4b', '#16541c']) 
+    }
   }
 
   render() {
-    const xScale = this.state.xScale
-    .domain(this.state.years)
-    .range([20, 500])
-
-    const yScale = this.state.yScale 
-    .domain([0, 100])
-    .range([20, 500])
-
-    const bars = (
-      this.state.incineratedData.map((datum, index) =>
-        <rect
-          key={datum}
-          x={index * xScale.bandwidth()}
-          y={500-yScale(datum)}
-          height={yScale(datum)}
-          width={xScale.bandwidth()}
-          fill={this.state.colorScale(datum)}
-         
-        />,
-      )
-    )
-    return (
-      <svg height='500' width='500' transform='translate(100,100)'>
-        {bars}
+  const { xScale, yScale, mode } = this.state
+  return (
+    <>
+    <div>
+    <h1>How has waste disposal changed?</h1>
+    <p>This visualization shows you how our waste management has changed over time.</p>
+    <p>Notice how as the discarded trash values decrease, other management methods such as recycling increase.</p>
+    <button onClick={()=> this.setState({ mode: 1})} disabled={mode===1}>
+      Disposed trash
+    </button>
+    <button onClick={()=> this.setState({ mode: 2})} disabled={mode===2}>
+      Incinerated trash
+    </button>
+    <button onClick={()=> this.setState({ mode: 3})} disabled={mode===3}>
+      Recycled trash
+    </button>
+    </div>
+    <svg height='700' width='700' transform='translate(100,100)'>
+    <Bars
+      data = {this.getData()}
+      xScale = {xScale}
+      yScale = {yScale}
+      colorScale = {this.getColorRange()}
+      onMouseOverCallback={datum => this.setState({hoveredBar: datum})}
+      onMouseOutCallback={datum => this.setState({hoveredBar: null})}
+    />
+      <Axis
+       orient = 'Bottom'
+       scale = {xScale}
+       tickSize = {10}
+       translate = 'translate(-25, 500)' 
+      />
+      <Axis
+       orient = 'Left'
+       scale = {yScale}
+       tickSize = {10}
+       translate = 'translate(0,0)'
+      />
       </svg>
+    </>
     );
   }
 }

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import RecyclingChart from './RecyclingChart';
 import * as serviceWorker from './serviceWorker';
+import { years, discardedData, incineratedData, recycledData } from './recyclingData'
 
 ReactDOM.render(<RecyclingChart />, document.getElementById('root'));
 
