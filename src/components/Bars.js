@@ -6,27 +6,6 @@ export default class Bars extends Component {
     super(props);
   }
 
-  state = {
-    tooltipOpen: false
-  }
-
-  toggle = () => {
-    this.setState({ tooltipOpen: !this.state.tooltipOpen })
-  }
-
-  onMouseOverCallback = datum => {
-    return (
-      <Tooltip placement="top" 
-      isOpen={this.state.tooltipOpen} 
-      autohide={false} 
-      target="rect" 
-      toggle={this.toggle}>
-        {datum}
-      
-      </Tooltip>
-    )
-  }
-
   render() {
     const { data, xScale, yScale, colorScale } = this.props
     const bars = (
@@ -38,7 +17,7 @@ export default class Bars extends Component {
             height={yScale(datum)}
             width={xScale.bandwidth()}
             fill={colorScale(datum)}
-            onMouseOver={() => this.onMouseOverCallback(datum)}
+            onMouseOver={() => this.props.onMouseOverCallback(datum, index)}
             onMouseOut={() => this.props.onMouseOutCallback(null)}
           />,
         )

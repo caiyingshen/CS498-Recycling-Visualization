@@ -2,6 +2,16 @@
   text-align: center;
 }
 
+.detail-card-view {
+  position: absolute;
+  left: 650px;
+  top: 500px;
+}
+
+.header-section {
+  max-width: 800px; 
+}
+
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
